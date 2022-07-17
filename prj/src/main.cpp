@@ -67,6 +67,7 @@ int main()
     cout<<"w - wybor lazika\n";
     cout<<"l - lista probek na scenie\n";
     cout<<"p - podejmij probke (tylko FSR)\n";
+    cout<<"z - pozostaw probke na scenie(Tylko FSR)\n";
     cout<<"m - wyswietl menu\n\nk - koniec dzialania programu\n";
     
 
@@ -144,6 +145,9 @@ int main()
           cout<<"Twoj wybor, "<<WczytanyZnak<<" - podjecie probki\n";
           Mars_Scene.Podejmij_probke();
           break;
+        case 'z':
+          cout<<"Twoj wybor, "<<WczytanyZnak<<" - pozostawienie probki\n";
+          Mars_Scene.Pozostaw_probke();
         case 'm':
           cout<<"Twoj wybor, "<<WczytanyZnak<<" - menu\n";
         break;

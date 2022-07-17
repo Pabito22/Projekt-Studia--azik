@@ -262,6 +262,30 @@ void Scena::Podejmij_probke(){
   }
 }
 
+void Scena::Pozostaw_probke(){
+  //if FSR rover then possible to levae the probe
+  if(get_AktywnyLazik().SprawdzIDklasy() == ID_KLASY_LAZIK_FSR)
+  {
+    std::shared_ptr<LazikSFR> SFR_ptr = std::static_pointer_cast<LazikSFR>(get_LazikSFR());
+    //if there is no probes on the rover then print info otherwise leave the probe
+    if(SFR_ptr->get__ListaProbek().size() == 0){std::cout<<"\nBrak probek na Laziku!\n";}
+    else
+    {
+      //get the probe from SFR rover and remove it from the SFR
+      std::shared_ptr<ObiektGeom> ptr_toProbe = *(SFR_ptr->get__ListaProbek().begin());
+      SFR_ptr->get__ListaProbek().pop_front();
+      //put and draw it on the Scene
+      get_ObiektySceny().push_front(ptr_toProbe);
+      ptr_toProbe->get_Polozenie() = get_AktywnyLazik().get_Polozenie();
+      ptr_toProbe->Przelicz_i_Zapisz_Wierzcholki();
+      this->get_Lacze().Rysuj();
+    }
+  }
+  else{
+    std::cout<<"\nTylko Lazik FSR moze pozostawic probke!\n\n";
+  }
+}/*end fun*/
+
 
 void Scena::Wyswietl_Probki_NaScenie()const{
   for(std::_List_const_iterator<std::shared_ptr<ObiektGeom>> iter = ObiektySceny.begin(); iter != ObiektySceny.end(); ++iter){

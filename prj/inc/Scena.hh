@@ -254,8 +254,18 @@ public:
     /**
      * @brief Takes a probe on the FSR Rover
      * 
+     * POST:Probe removed from Scene list of the probes
+     *      Probe added to FSR rover list of the Probes 
      */
     void Podejmij_probke();
+
+    /**
+     * @brief FSR Rover leaves a probe on the Scene
+     * 
+     * POST:Scena lists of the probe will have one more element
+     *      Rovel list of probes will be declined by one element
+     */
+    void Pozostaw_probke();
 
     /**
      * @brief Prints out all the Probes witch are lying on the mars Surface
