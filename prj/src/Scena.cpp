@@ -100,8 +100,24 @@ void Scena::PrzejedzDystans_anim(double dystans){
         while(counter <= finalDistance){
           
           
-
+          //calculate new coordinates and draw a Rover
           this->get_AktywnyLazik().PrzejedzDystans(dystans);
+          //downward projection to SFR Rover
+          std::shared_ptr<LazikSFR> SFR_RoverPtr = std::static_pointer_cast<LazikSFR>(get_LazikSFR());
+          //if FSR rovar and it have some probes then draw them on the same position in which SFR rover is posicioned
+          int horizontal_position = 10;
+          if((get_AktywnyLazik().SprawdzIDklasy()==ID_KLASY_LAZIK_FSR) && (SFR_RoverPtr->get__ListaProbek().size()!=0)){
+            //std::cout<<"you are in\n";
+            for(std::_List_const_iterator<std::shared_ptr<ProbkaRegolitu>> iter = SFR_RoverPtr->get__ListaProbek().begin(); iter != SFR_RoverPtr->get__ListaProbek().end(); ++iter){
+                (*iter)->get_Polozenie()[0] = SFR_RoverPtr->get_Polozenie()[0];
+                (*iter)->get_Polozenie()[1] = SFR_RoverPtr->get_Polozenie()[1];
+                (*iter)->get_Polozenie()[2] = horizontal_position;
+                (*iter)->get_MacRotacji() = SFR_RoverPtr->get_MacRotacji();
+                (*iter)->Przelicz_i_Zapisz_Wierzcholki();
+                horizontal_position+=5;
+              }
+
+          }
           this->get_Lacze().Rysuj();
           ++counter;
           usleep(this->get_AktywnyLazik().get_Szybkosc() *  100000);
@@ -142,15 +158,12 @@ void Scena::PrzejedzDystans_anim(double dystans){
                 counter = finalDistance;
                 this->get_AktywnyLazik().PrzejedzDystans(-2*dystans);
                 Ride_decision = RIDE_NO;
-                }
-              else{Ride_decision = RIDE_YES;
-              }
-              
-            }
-            //std::cout<<"\n-----------------\n-----------------\n";
-            //std::cout<<"uderzenie!\n";
-            //counter=finalDistance;
-          } 
+              }else{Ride_decision = RIDE_YES;}
+                
+            } 
+          }/*if sprawdz czy przejazd lazika nad probka*/
+
+
 
 
           
@@ -175,10 +188,27 @@ void Scena::ObrocOKat_anim(double obrot_calkowiy){
 
         double counter =1;
         while(counter < obrot_calkowiy){
+          //calculatin and drowing the rotation of the rover
           this->get_AktywnyLazik().ObrocLazik(obrot);
+          //taking care of the probes if SFR rover
+            //downward projection to SFR Rover
+          std::shared_ptr<LazikSFR> SFR_RoverPtr = std::static_pointer_cast<LazikSFR>(get_LazikSFR());
+          //if FSR rovar and it have some probes then draw them on the same position in which SFR rover is posicioned
+          int horizontal_position = 10;
+          if((get_AktywnyLazik().SprawdzIDklasy()==ID_KLASY_LAZIK_FSR) && (SFR_RoverPtr->get__ListaProbek().size()!=0)){
+            //std::cout<<"you are in\n";
+            for(std::_List_const_iterator<std::shared_ptr<ProbkaRegolitu>> iter = SFR_RoverPtr->get__ListaProbek().begin(); iter != SFR_RoverPtr->get__ListaProbek().end(); ++iter){
+                (*iter)->get_MacRotacji() = SFR_RoverPtr->get_MacRotacji();
+                (*iter)->Przelicz_i_Zapisz_Wierzcholki();
+                horizontal_position+=5;
+              }
+
+          }
           this->get_Lacze().Rysuj();
           ++counter;
           usleep(this->get_AktywnyLazik().get_Szybkosc() *  10000);
+
+          
 
           //if collision between any posible Rovers then print info and stop the Movement
           if(LazikFSR->CzyKolizja(Lazik2) == TK_Kolizja){
@@ -217,9 +247,12 @@ void Scena::Podejmij_probke(){
     if(ID_Probki == 0){                 //if nothing found print info about it
       std::cout<<"Brak probek w poblizu\n";
     }else{                              //if smth found print info about it
-      std::shared_ptr<ObiektGeom> pointToRover = get_ScenaObj(ID_Probki);
-      get_ScenaObj(ID_Probki)->get_Skala() = Wektor3D(200,2000,0);
-      pointToRover->Przelicz_i_Zapisz_Wierzcholki();
+      std::shared_ptr<ObiektGeom> pointToProbe = get_ScenaObj(ID_Probki);
+      //set new coordinates for the probe(the same as for FSR Rover)
+      get_ScenaObj(ID_Probki)->get_Polozenie()[0] = this->get_AktywnyLazik().get_Polozenie()[0];
+      get_ScenaObj(ID_Probki)->get_Polozenie()[1] = this->get_AktywnyLazik().get_Polozenie()[1];
+      get_ScenaObj(ID_Probki)->get_Polozenie()[2] = 10;
+      pointToProbe->Przelicz_i_Zapisz_Wierzcholki();
       this->get_Lacze().Rysuj();
       WezProbkeZeScenyDoLazika(get_ScenaObj(ID_Probki));
     }
